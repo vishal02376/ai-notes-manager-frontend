@@ -19,12 +19,12 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 export async function getNotes(): Promise<Note[]> {
-  const res = await fetch(`${API_BASE_URL}/notes`);
+  const res = await fetch(`${API_BASE_URL}/web/api/notes`);
   return handleResponse<Note[]>(res);
 }
 
 export async function createNote(note: NoteInput): Promise<Note> {
-  const res = await fetch(`${API_BASE_URL}/notes`, {
+  const res = await fetch(`${API_BASE_URL}/web/api/notes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(note),
@@ -33,7 +33,7 @@ export async function createNote(note: NoteInput): Promise<Note> {
 }
 
 export async function updateNote(id: string, note: NoteInput): Promise<Note> {
-  const res = await fetch(`${API_BASE_URL}/notes/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/web/api/notes/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(note),
@@ -42,14 +42,14 @@ export async function updateNote(id: string, note: NoteInput): Promise<Note> {
 }
 
 export async function deleteNote(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/notes/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/web/api/notes/${id}`, {
     method: "DELETE",
   });
   await handleResponse<Record<string, never>>(res);
 }
 
 export async function improveNote(content: string): Promise<string> {
-  const res = await fetch(`${API_BASE_URL}/ai/improve-note`, {
+  const res = await fetch(`${API_BASE_URL}/web/api/ai/improve-note`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content }),
