@@ -18,8 +18,9 @@ export default function Home() {
     try {
       setNotes(await getNotes());
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load notes");
+      setError(err instanceof Error ? err.message : "Failed to load note");
     } finally {
+      
       setIsLoading(false);
     }
   };
