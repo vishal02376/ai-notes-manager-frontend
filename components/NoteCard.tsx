@@ -16,7 +16,9 @@ export default function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
         {note.content}
       </p>
       <p className="text-xs text-zinc-400">
-        Updated {new Date(note.updatedDate).toLocaleString()}
+        {note.updatedDate !== note.createdDate
+          ? `Updated ${new Date(note.updatedDate).toLocaleString()}`
+          : `Created ${new Date(note.createdDate).toLocaleString()}`}
       </p>
       <div className="flex gap-3 text-sm">
         <button onClick={() => onEdit(note)} className="underline underline-offset-2">
