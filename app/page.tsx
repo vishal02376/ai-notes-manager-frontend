@@ -9,28 +9,30 @@ import NoteList from "@/components/NoteList";
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const loadNotes = async () => {
-    setIsLoading(true);
-    setError("");
+  // Fetches all notes from the backend
+  async function loadNotes() {
     try {
-      setNotes(await getNotes());
+      const data = await getNotes();
+      setNotes(data);
+      setError("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load note");
+      setError(err instanceof Error ? err.message : "Failed to load notes");
     } finally {
-      
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }
 
+  // Load notes once when the page opens
   useEffect(() => {
-   
+    
     loadNotes();
   }, []);
 
-  const handleSave = async (note: NoteInput) => {
+  // On form submit: update in edit mode, otherwise create a new note
+  async function handleSave(note: NoteInput) {
     if (editingNote) {
       await updateNote(editingNote._id, note);
       setEditingNote(null);
@@ -38,26 +40,28 @@ export default function Home() {
       await createNote(note);
     }
     await loadNotes();
-  };
+  }
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     await deleteNote(id);
     await loadNotes();
-  };
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-10">
       <h1 className="text-2xl font-semibold">AI-Powered Notes Manager</h1>
 
+      
       <NoteForm
-        key={editingNote?._id ?? "new"}
+        key={editingNote ? editingNote._id : "new"}
         editingNote={editingNote}
         onSave={handleSave}
         onCancel={() => setEditingNote(null)}
       />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {isLoading ? (
+
+      {loading ? (
         <p className="text-sm text-zinc-500">Loading notes...</p>
       ) : (
         <NoteList notes={notes} onEdit={setEditingNote} onDelete={handleDelete} />

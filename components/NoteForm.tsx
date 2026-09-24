@@ -10,32 +10,35 @@ interface NoteFormProps {
   onCancel: () => void;
 }
 
-// The parent remounts this component with a fresh `key` whenever
-// `editingNote` changes, so these initial values only need to run once
-// per note instead of being re-synced with an effect.
+const inputStyle =
+  "rounded border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-black/30 dark:border-white/10 dark:focus:border-white/30";
+
 export default function NoteForm({ editingNote, onSave, onCancel }: NoteFormProps) {
-  const [title, setTitle] = useState(editingNote?.title ?? "");
-  const [content, setContent] = useState(editingNote?.content ?? "");
-  const [isSaving, setIsSaving] = useState(false);
-  const [isImproving, setIsImproving] = useState(false);
+  // Prefill existing values in edit mode, otherwise start with an empty form
+  const [title, setTitle] = useState(editingNote ? editingNote.title : "");
+  const [content, setContent] = useState(editingNote ? editingNote.content : "");
+  const [saving, setSaving] = useState(false);
+  const [improving, setImproving] = useState(false);
   const [error, setError] = useState("");
 
-  const handleImprove = async () => {
-    if (!content.trim()) return;
-    setIsImproving(true);
+  // Improve the content using AI
+  async function handleImprove() {
+    setImproving(true);
     setError("");
     try {
-      setContent(await improveNote(content));
+      const improved = await improveNote(content);
+      setContent(improved);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to improve note");
     } finally {
-      setIsImproving(false);
+      setImproving(false);
     }
-  };
+  }
 
-  const handleSubmit = async (e: SubmitEvent) => {
+  // Save the note 
+  async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
-    setIsSaving(true);
+    setSaving(true);
     setError("");
     try {
       await onSave({ title, content });
@@ -44,9 +47,11 @@ export default function NoteForm({ editingNote, onSave, onCancel }: NoteFormProp
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save note");
     } finally {
-      setIsSaving(false);
+      setSaving(false);
     }
-  };
+  }
+
+  const isEmpty = !title.trim() || !content.trim();
 
   return (
     <form
@@ -57,14 +62,14 @@ export default function NoteForm({ editingNote, onSave, onCancel }: NoteFormProp
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Title"
-        className="rounded border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-black/30 dark:border-white/10 dark:focus:border-white/30"
+        className={inputStyle}
       />
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Write your note..."
         rows={5}
-        className="rounded border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-black/30 dark:border-white/10 dark:focus:border-white/30"
+        className={inputStyle}
       />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
@@ -72,19 +77,19 @@ export default function NoteForm({ editingNote, onSave, onCancel }: NoteFormProp
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="submit"
-          disabled={isSaving || !title.trim() || !content.trim()}
+          disabled={saving || isEmpty}
           className="rounded bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50"
         >
-          {isSaving ? "Saving..." : editingNote ? "Update Note" : "Add Note"}
+          {saving ? "Saving..." : editingNote ? "Update Note" : "Add Note"}
         </button>
 
         <button
           type="button"
           onClick={handleImprove}
-          disabled={isImproving || !content.trim()}
+          disabled={improving || !content.trim()}
           className="rounded border border-black/10 px-4 py-2 text-sm disabled:opacity-50 dark:border-white/10"
         >
-          {isImproving ? "Improving..." : "Improve with AI"}
+          {improving ? "Improving..." : "Improve with AI"}
         </button>
 
         {editingNote && (
