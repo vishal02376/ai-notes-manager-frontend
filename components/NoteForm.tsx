@@ -17,8 +17,10 @@ export default function NoteForm({ editingNote, onSave, onCancel }: NoteFormProp
   // Prefill existing values in edit mode, otherwise start with an empty form
   const [title, setTitle] = useState(editingNote ? editingNote.title : "");
   const [content, setContent] = useState(editingNote ? editingNote.content : "");
+
   const [saving, setSaving] = useState(false);
   const [improving, setImproving] = useState(false);
+
   const [error, setError] = useState("");
 
   // Improve the content using AI

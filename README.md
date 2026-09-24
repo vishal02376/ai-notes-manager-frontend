@@ -76,6 +76,4 @@ npm run lint    # run ESLint
 - Each note shows its Created date, or its Updated date once it has been edited
 - Loading and error messages
 
-## Note
 
-In development, React Strict Mode runs effects twice, so the notes request may appear twice in the Network tab. This does not happen in a production build.
