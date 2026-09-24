@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI-Powered Notes Manager - Frontend
 
-## Getting Started
+A Next.js (React) UI for creating, viewing, editing and deleting notes, with an **Improve with AI** button that rewrites a note to be clearer, more professional and grammatically correct.
 
-First, run the development server:
+The frontend talks to the Express/MongoDB backend in the `backend/` folder.
+
+## Technologies Used
+
+- Next.js 16 (App Router) with React 19 (functional components and hooks)
+- TypeScript
+- Tailwind CSS v4
+- Fetch API for HTTP calls
+
+## Project Structure
+
+```
+frontend/
+├── app/
+│   ├── layout.tsx        # Root layout
+│   ├── page.tsx          # Main page: holds state, calls the API
+│   └── globals.css
+├── components/
+│   ├── NoteForm.tsx      # Create/Edit form + "Improve with AI" button
+│   ├── NoteList.tsx      # Renders the list of notes
+│   └── NoteCard.tsx      # A single note (Edit / Delete)
+├── lib/
+│   ├── api.ts            # All backend API calls
+│   └── types.ts          # Note and NoteInput types
+└── .env.local            # Environment variables (not committed)
+```
+
+## Setup
+
+Prerequisites: Node.js 20+ and the backend running (see `backend/README.md`).
+
+```bash
+cd frontend
+npm install
+```
+
+## Environment Variables
+
+Create a `.env.local` file in the `frontend/` folder:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5001
+```
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Base URL of the backend server (host and port only, without `/web/api`) |
+
+Restart the dev server after changing this value.
+
+## Run the Project
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other scripts:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build   # production build
+npm run start   # run the production build
+npm run lint    # run ESLint
+```
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+- Create, view, edit and delete notes
+- Title and content are required
+- **Improve with AI** button rewrites the note text using the backend AI endpoint. The improved text is placed in the form and is only saved when you click Add/Update Note
+- Each note shows its Created date, or its Updated date once it has been edited
+- Loading and error messages
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Note
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+In development, React Strict Mode runs effects twice, so the notes request may appear twice in the Network tab. This does not happen in a production build.
